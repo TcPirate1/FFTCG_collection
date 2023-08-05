@@ -3,6 +3,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using DotNetEnv;
+using FFTCG_collection;
 
 string projectRoot = GetProjectRoot();
 Environment.CurrentDirectory = projectRoot;
@@ -13,12 +14,24 @@ string dbCluster = Environment.GetEnvironmentVariable("ATLAS_URI");
 
 MongoClient client = new(dbCluster);
 
-List<string> databases = client.ListDatabaseNames().ToList();
+//List<string> databases = client.ListDatabaseNames().ToList();
 
-foreach (string database in databases)
-{
-    Console.WriteLine(database);
-}
+//foreach (string database in databases)
+//{
+//    Console.WriteLine(database);
+//}
+
+//List<string> collections = client.GetDatabase("FFCollection").ListCollectionNames().ToList();
+
+//foreach (string collection in collections)
+//{
+//    Console.WriteLine(collection);
+//}
+
+//var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+
+Console.WriteLine("How many cards would you like to add?");
+int count = Convert.ToInt32(Console.ReadLine());
 
 static string GetProjectRoot()
 {
