@@ -33,12 +33,17 @@ MongoClient client = new(dbCluster);
 Console.WriteLine("How many cards would you like to add?");
 int count = Convert.ToInt32(Console.ReadLine());
 
+while (count > 0)
+{
+    Console.WriteLine($"Adding card... {count}");
+}
+
 static string GetProjectRoot()
 {
     string currentDirectory = Directory.GetCurrentDirectory();
     DirectoryInfo directory = new(currentDirectory);
 
-    // Traverse up the directory tree until the solution file (e.g., .sln) is found
+    // Traverse up the directory tree (from /bin/Debug/net6.0) until the solution file (e.g., .sln) is found
     while (directory != null && !directory.GetFiles("*.sln").Any())
     {
         directory = directory.Parent;
