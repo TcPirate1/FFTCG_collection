@@ -29,14 +29,26 @@ MongoClient client = new(dbCluster);
 //}
 
 //var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
-
-Console.WriteLine("How many cards would you like to add?");
-int count = Convert.ToInt32(Console.ReadLine());
-
-while (count > 0)
+bool invalid;
+do
 {
-    Console.WriteLine($"Adding card... {count}");
+    Console.WriteLine("How many cards would you like to add?");
+    if (int.TryParse(Console.ReadLine(), out int count) == true)
+    {
+        invalid = false;
+        while (count > 0)
+        {
+            Console.WriteLine($"Adding card... {count}");
+            count--;
+        }
+    }
+    else
+    {
+        invalid = true;
+        Console.WriteLine("Invalid, please enter a number of cards to add.\n");
+    }
 }
+while (invalid == true);
 
 static string GetProjectRoot()
 {
