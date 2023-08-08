@@ -30,5 +30,19 @@ namespace FFTCG_collection
             Code = code;
             Foil = foil;
         }
+
+        public static void CardAdd(int count)
+        {
+            Console.WriteLine($"\nAdding card {count}");
+            Console.WriteLine("Name of card: ");
+            string cardname1 = Console.ReadLine();
+            Console.WriteLine("Image location: ");
+            string image1 = Console.ReadLine();
+            Console.WriteLine("What is the card's type?");
+            string type1 = Console.ReadLine();
+            Console.WriteLine($"What is the card's cost?");
+            double cost1 = Convert.ToDouble(Console.ReadLine());
+            // Arrays, how to do this?
+        }
     }
 }

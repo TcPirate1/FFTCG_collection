@@ -33,13 +33,15 @@ bool invalid;
 do
 {
     Console.WriteLine("How many cards would you like to add?");
-    if (int.TryParse(Console.ReadLine(), out int count) == true)
+    var isNumber = int.TryParse(Console.ReadLine(), out int count);
+    if (isNumber == true)
     {
         invalid = false;
-        while (count > 0)
+        int i = 1;
+        while (i <= count)
         {
-            Console.WriteLine($"Adding card... {count}");
-            count--;
+            Card.CardAdd(i);
+            i++;
         }
     }
     else
