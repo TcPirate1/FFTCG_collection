@@ -5,12 +5,12 @@ using MongoDB.Bson;
 using DotNetEnv;
 using FFTCG_collection;
 
-string projectRoot = GetProjectRoot();
+string projectRoot = GetProjectRoot()!;
 Environment.CurrentDirectory = projectRoot;
 
 Env.Load();
 
-string dbCluster = Environment.GetEnvironmentVariable("ATLAS_URI");
+string dbCluster = Environment.GetEnvironmentVariable("ATLAS_URI")!;
 
 MongoClient client = new(dbCluster);
 
@@ -29,30 +29,29 @@ MongoClient client = new(dbCluster);
 //}
 
 //var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
-bool invalid;
+bool repeat;
 do
 {
-    Console.WriteLine("How many cards would you like to add?");
-    var isNumber = int.TryParse(Console.ReadLine(), out int count);
-    if (isNumber == true)
+    Card.CardAdd();
+    Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
+    char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
+    if (valid != 'y' || valid != 'n')
     {
-        invalid = false;
-        int i = 1;
-        while (i <= count)
-        {
-            Card.CardAdd(i);
-            i++;
-        }
+        Console.WriteLine("Invalid, please type y or n.");
+        repeat = true;
+    }
+    else if (valid == 'n')
+    {
+        repeat = false;
     }
     else
     {
-        invalid = true;
-        Console.WriteLine("Invalid, please enter a number of cards to add.\n");
+        repeat = true;
     }
 }
-while (invalid == true);
+while (repeat == true);
 
-static string GetProjectRoot()
+static string? GetProjectRoot()
 {
     string currentDirectory = Directory.GetCurrentDirectory();
     DirectoryInfo directory = new(currentDirectory);
@@ -60,7 +59,7 @@ static string GetProjectRoot()
     // Traverse up the directory tree (from /bin/Debug/net6.0) until the solution file (e.g., .sln) is found
     while (directory != null && !directory.GetFiles("*.sln").Any())
     {
-        directory = directory.Parent;
+        directory = directory.Parent!;
     }
 
     return directory?.FullName;

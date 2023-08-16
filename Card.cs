@@ -18,9 +18,9 @@ namespace FFTCG_collection
         private string[] Special_icons { get; set; } = null!;
         private string[] Elements { get; set; } = null!;
         private string Code { get; set; } = null!;
-        private bool Foil;
+        private char Foil;
 
-        public Card(string name, string image, string type, double cost, string[] special_icons, string[] elements, string code, bool foil)
+        public Card(string name, string image, string type, double cost, string[] special_icons, string[] elements, string code, char foil)
         {
             Name = name;
             Image = image;
@@ -32,42 +32,41 @@ namespace FFTCG_collection
             Foil = foil;
         }
 
-        public static void CardAdd(int count)
+        public static void CardAdd()
         {
-            //Card newCard = new();
-            Console.WriteLine($"\nAdding card {count}");
             Console.WriteLine("Name of card: ");
-            string cardname1 = Console.ReadLine().Trim();
+            string cardname1 = Console.ReadLine()!.Trim();
             Console.WriteLine("Image location: ");
-            string image1 = Console.ReadLine().Trim();
+            string image1 = Console.ReadLine()!.Trim();
             Console.WriteLine("What is the card's type?");
-            string type1 = Console.ReadLine().Trim();
+            string type1 = Console.ReadLine()!.Trim();
             Console.WriteLine("What is the card's cost?");
-            double cost1 = Convert.ToDouble(Console.ReadLine().Trim());
+            double cost1 = Convert.ToDouble(Console.ReadLine()!.Trim());
             Console.WriteLine("What is the card's special icons?\nEnter with spaces please.\n");
-            string icons1 = Console.ReadLine().Trim();
+            string icons1 = Console.ReadLine()!.Trim();
             string[] iconsArray1 = icons1.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             foreach (string icon in iconsArray1)
             {
                 Console.WriteLine($"{icon}");
             }
             Console.WriteLine("What is the card's elements?\nEnter with spaces please.\n");
-            string elements1 = Console.ReadLine().Trim();
+            string elements1 = Console.ReadLine()!.Trim();
             string[] elementsArray1 = elements1.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             Console.WriteLine("What is the card's code?");
-            string code1 = Console.ReadLine().Trim();
+            string code1 = Console.ReadLine()!.Trim();
             while (CardRegex(code1) != true)
             {
                 Console.WriteLine("Please enter a valid card code.");
-                code1 = Console.ReadLine();
+                code1 = Console.ReadLine()!;
             }
             Console.WriteLine("Is this card a foil?\nEnter \'y\' for yes and \'n\' for no.");
-            char foil = Convert.ToChar(Console.ReadLine().Trim().ToLower());
+            char foil = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
             while (foil != 'y' && foil != 'n')
             {
                 Console.WriteLine("Invalid. Please enter either \'y\' or \'n\'");
-                foil = Convert.ToChar(Console.ReadLine().Trim().ToLower());
+                foil = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
             }
+            Card newCard = new(cardname1, image1, type1, cost1, iconsArray1, elementsArray1, code1, foil);
         }
         private static bool CardRegex(string regex)
         {
