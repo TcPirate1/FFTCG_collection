@@ -32,7 +32,7 @@ namespace FFTCG_collection
             Foil = foil;
         }
 
-        public static void CardAdd()
+        public static Card CardAdd()
         {
             Console.WriteLine("Name of card: ");
             string cardname1 = Console.ReadLine()!.Trim();
@@ -67,6 +67,7 @@ namespace FFTCG_collection
                 foil = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
             }
             Card newCard = new(cardname1, image1, type1, cost1, iconsArray1, elementsArray1, code1, foil);
+            return newCard;
         }
         private static bool CardRegex(string regex)
         {

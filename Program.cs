@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using MongoDB.Driver;
-using MongoDB.Bson;
+//using MongoDB.Bson;
 using DotNetEnv;
 using FFTCG_collection;
 
@@ -28,14 +28,19 @@ MongoClient client = new(dbCluster);
 //    Console.WriteLine(collection);
 //}
 
-//var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+
 bool repeat;
 do
 {
-    Card.CardAdd();
+    Console.WriteLine("Welcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
+
+    cardPlaylist.InsertOne(Card.CardAdd());
+    Console.WriteLine("Adding card to collection...");
+
     Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
     char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
-    if (valid != 'y' || valid != 'n')
+    if (valid != 'y' && valid != 'n')
     {
         Console.WriteLine("Invalid, please type y or n.");
         repeat = true;
