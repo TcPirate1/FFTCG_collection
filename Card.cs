@@ -11,16 +11,16 @@ namespace FFTCG_collection
     internal class Card
     {
         public ObjectId _id { get; set; }
-        private string Name { get; set; } = null!;
-        private string Image { get; set; } = null!;
-        private string Type { get; set; } = null!;
+        private string Name { get; set; }
+        private string Image { get; set; }
+        private string Type { get; set; }
         private double Cost { get; set; }
-        private string[] Special_icons { get; set; } = null!;
-        private string[] Elements { get; set; } = null!;
-        private string Code { get; set; } = null!;
-        private char Foil;
+        private string[] Special_icons { get; set; }
+        private string[] Elements { get; set; }
+        private string Code { get; set; }
+        private bool Foil { get; set; }
 
-        public Card(string name, string image, string type, double cost, string[] special_icons, string[] elements, string code, char foil)
+        public Card(string name, string image, string type, double cost, string[] special_icons, string[] elements, string code, bool foil)
         {
             Name = name;
             Image = image;
@@ -32,42 +32,54 @@ namespace FFTCG_collection
             Foil = foil;
         }
 
-        public static Card CardAdd()
+        public static BsonDocument CardAdd()
         {
             Console.WriteLine("Name of card: ");
-            string cardname1 = Console.ReadLine()!.Trim();
+            string cardname = Console.ReadLine()!.Trim();
             Console.WriteLine("Image location: ");
-            string image1 = Console.ReadLine()!.Trim();
+            string image = Console.ReadLine()!.Trim();
             Console.WriteLine("What is the card's type?");
-            string type1 = Console.ReadLine()!.Trim();
+            string type = Console.ReadLine()!.Trim();
             Console.WriteLine("What is the card's cost?");
-            double cost1 = Convert.ToDouble(Console.ReadLine()!.Trim());
+            double cost = Convert.ToDouble(Console.ReadLine()!.Trim());
             Console.WriteLine("What is the card's special icons?\nEnter with spaces please.\n");
-            string icons1 = Console.ReadLine()!.Trim();
-            string[] iconsArray1 = icons1.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            foreach (string icon in iconsArray1)
-            {
-                Console.WriteLine($"{icon}");
-            }
+            string icons = Console.ReadLine()!.Trim();
+            string[] iconsArray = icons.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             Console.WriteLine("What is the card's elements?\nEnter with spaces please.\n");
-            string elements1 = Console.ReadLine()!.Trim();
-            string[] elementsArray1 = elements1.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string elements = Console.ReadLine()!.Trim();
+            string[] elementsArray = elements.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             Console.WriteLine("What is the card's code?");
-            string code1 = Console.ReadLine()!.Trim();
-            while (CardRegex(code1) != true)
+            string code = Console.ReadLine()!.Trim().ToUpper();
+            while (CardRegex(code) != true)
             {
                 Console.WriteLine("Please enter a valid card code.");
-                code1 = Console.ReadLine()!;
+                code = Console.ReadLine()!;
             }
             Console.WriteLine("Is this card a foil?\nEnter \'y\' for yes and \'n\' for no.");
-            char foil = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
-            while (foil != 'y' && foil != 'n')
+            char foilValid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
+            while (foilValid != 'y' && foilValid != 'n')
             {
                 Console.WriteLine("Invalid. Please enter either \'y\' or \'n\'");
-                foil = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
+                foilValid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
             }
-            Card newCard = new(cardname1, image1, type1, cost1, iconsArray1, elementsArray1, code1, foil);
-            return newCard;
+            bool foil = foilValid == 'y' ? true : false;
+
+            Card newCard = new(cardname, image, type, cost, iconsArray, elementsArray, code, foil);
+
+            var newDocument = new BsonDocument
+            {
+                { "Card Name", newCard.Name },
+                { "Image Location", newCard.Image},
+                { "Type", newCard.Type},
+                { "Cost", newCard.Cost},
+                { "Special Icons", new BsonArray(newCard.Special_icons)},
+                { "Elements", new BsonArray(newCard.Elements)},
+                { "Card code", newCard.Code},
+                { "Foil?", newCard.Foil}
+
+            };
+
+            return newDocument;
         }
         private static bool CardRegex(string regex)
         {

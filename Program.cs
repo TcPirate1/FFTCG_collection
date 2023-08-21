@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using MongoDB.Driver;
-//using MongoDB.Bson;
+using MongoDB.Bson;
 using DotNetEnv;
 using FFTCG_collection;
 
@@ -14,29 +14,15 @@ string dbCluster = Environment.GetEnvironmentVariable("ATLAS_URI")!;
 
 MongoClient client = new(dbCluster);
 
-//List<string> databases = client.ListDatabaseNames().ToList();
-
-//foreach (string database in databases)
-//{
-//    Console.WriteLine(database);
-//}
-
-//List<string> collections = client.GetDatabase("FFCollection").ListCollectionNames().ToList();
-
-//foreach (string collection in collections)
-//{
-//    Console.WriteLine(collection);
-//}
-
-var cardPlaylist = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+var cardCollection = client.GetDatabase("FFCollection").GetCollection<BsonDocument>("cards");
 
 bool repeat;
 do
 {
     Console.WriteLine("Welcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
 
-    cardPlaylist.InsertOne(Card.CardAdd());
-    Console.WriteLine("Adding card to collection...");
+    cardCollection.InsertOne(Card.CardAdd());
+    Console.WriteLine($"Adding card to collection...");
 
     Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
     char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
