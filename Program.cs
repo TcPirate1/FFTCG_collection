@@ -20,25 +20,44 @@ bool repeat;
 do
 {
     Console.WriteLine("Welcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
-
-    cardCollection.InsertOne(Card.CardAdd());
-    Console.WriteLine($"Adding card to collection...");
-
-    Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
-    char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
-    if (valid != 'y' && valid != 'n')
+    Console.WriteLine("1. Add card to database");
+    try
     {
-        Console.WriteLine("Invalid, please type y or n.");
+        int invalid = Convert.ToInt32(Console.ReadLine()?.Trim());
+        if (invalid >= 0 && invalid <= 5)
+        {
+            repeat = false;
+        }
+        else
+        {
+            Console.WriteLine("Invalid input. Please enter the respective number in menu\n");
+            repeat = true;
+        }
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine($"\n{e.Message}\nPlease enter valid input.");
         repeat = true;
     }
-    else if (valid == 'n')
-    {
-        repeat = false;
-    }
-    else
-    {
-        repeat = true;
-    }
+
+    //cardCollection.InsertOne(Card.CardAdd());
+    //Console.WriteLine($"Adding card to collection...");
+
+    //Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
+    //char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
+    //if (valid != 'y' && valid != 'n')
+    //{
+    //    Console.WriteLine("Invalid, please type y or n.");
+    //    repeat = true;
+    //}
+    //else if (valid == 'n')
+    //{
+    //    repeat = false;
+    //}
+    //else
+    //{
+    //    repeat = true;
+    //}
 }
 while (repeat == true);
 
