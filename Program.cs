@@ -19,45 +19,38 @@ var cardCollection = client.GetDatabase("FFCollection").GetCollection<BsonDocume
 bool repeat;
 do
 {
-    Console.WriteLine("Welcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
-    Console.WriteLine("1. Add card to database");
+    Console.WriteLine("\nWelcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
+    Console.WriteLine("0. Exit program.");
+    Console.WriteLine("1. Add card to database.");
+    Console.WriteLine("2. Search for card in database.");
     try
     {
-        int invalid = Convert.ToInt32(Console.ReadLine()?.Trim());
-        if (invalid >= 0 && invalid <= 5)
+        int option = Convert.ToInt32(Console.ReadLine()?.Trim());
+        switch (option)
         {
-            repeat = false;
-        }
-        else
-        {
-            Console.WriteLine("Invalid input. Please enter the respective number in menu\n");
-            repeat = true;
+            case 0:
+                repeat = false;
+                break;
+            case 1:
+                cardCollection.InsertOne(Card.CardAdd());
+                Console.WriteLine("\nAdding card to collection...");
+                Console.WriteLine("\nCard added, returning to menu.");
+                repeat = true;
+                break;
+            case 2:
+                Console.WriteLine("Searching for card...");
+                repeat = true;
+                break;
+            default:
+                repeat = false;
+                break;
         }
     }
     catch (Exception e)
     {
-        Console.WriteLine($"\n{e.Message}\nPlease enter valid input.");
+        Console.WriteLine($"\n{e.Message}\nPlease enter valid input.\n");
         repeat = true;
     }
-
-    //cardCollection.InsertOne(Card.CardAdd());
-    //Console.WriteLine($"Adding card to collection...");
-
-    //Console.WriteLine("\nDo you want to add another card? (type y for yes and n for no)");
-    //char valid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
-    //if (valid != 'y' && valid != 'n')
-    //{
-    //    Console.WriteLine("Invalid, please type y or n.");
-    //    repeat = true;
-    //}
-    //else if (valid == 'n')
-    //{
-    //    repeat = false;
-    //}
-    //else
-    //{
-    //    repeat = true;
-    //}
 }
 while (repeat == true);
 
