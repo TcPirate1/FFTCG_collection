@@ -49,6 +49,7 @@ namespace FFTCG_collection
             while (int.TryParse(input, out cost) != true || cost < 1 || cost > 11)
             {
                 Console.WriteLine("Invalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\n Please input a number.");
+                input = Console.ReadLine()!.Trim();
             }
             Console.WriteLine("What is the card's special icons?\nEnter with spaces please.\n");
             string icons = Console.ReadLine()!.Trim();
