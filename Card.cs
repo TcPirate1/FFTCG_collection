@@ -46,10 +46,15 @@ namespace FFTCG_collection
 
             Console.WriteLine("\nName of card: ");
             string cardname = Console.ReadLine()!.Trim();
+            CheckEmptyString(cardname);
+
             Console.WriteLine("\nImage location: ");
             string image = Console.ReadLine()!.Trim();
+            CheckEmptyString(image);
+
             Console.WriteLine("\nWhat is the card's type?");
             string type = Console.ReadLine()!.Trim();
+            CheckEmptyString(type);
 
             Console.WriteLine("\nWhat is the card's cost?");
             input = Console.ReadLine()!.Trim();
@@ -152,12 +157,14 @@ namespace FFTCG_collection
             return iconsAndElements.Any(iconsAndElement => Regex.IsMatch(iconsAndElement, spaceRegex));
             // Check every element in the array
         }
-        private static void checkEmptyString(string input)
+        private static string CheckEmptyString(string input)
         {
             while (String.IsNullOrEmpty(input))
             {
                 Console.WriteLine("\nNo input detected. Please re-enter.");
+                input = Console.ReadLine()!.Trim();
             }
+            return input;
         }
     }
 }
