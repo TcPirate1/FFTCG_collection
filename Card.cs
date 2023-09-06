@@ -36,43 +36,80 @@ namespace FFTCG_collection
 
         public static BsonDocument CardAdd()
         {
+            string errorMsg = "You might of mistakenly typed a non-alphanumeric character that isn't ' .\nPlease re-enter.";
+            string icons;
+            string[] iconsArray;
+            string elements;
+            string[] elementsArray;
             string input;
-            Console.WriteLine("Name of card: ");
-            string cardname = Console.ReadLine()!.Trim();
-            Console.WriteLine("Image location: ");
-            string image = Console.ReadLine()!.Trim();
-            Console.WriteLine("What is the card's type?");
-            string type = Console.ReadLine()!.Trim();
-            Console.WriteLine("What is the card's cost?");
             int cost;
+
+            Console.WriteLine("\nName of card: ");
+            string cardname = Console.ReadLine()!.Trim();
+            CheckEmptyString(cardname);
+
+            Console.WriteLine("\nImage location: ");
+            string image = Console.ReadLine()!.Trim();
+            CheckEmptyString(image);
+
+            Console.WriteLine("\nWhat is the card's type?");
+            string type = Console.ReadLine()!.Trim();
+            CheckEmptyString(type);
+
+            Console.WriteLine("\nWhat is the card's cost?");
             input = Console.ReadLine()!.Trim();
             while (int.TryParse(input, out cost) != true || cost < 1 || cost > 11)
             {
-                Console.WriteLine("Invalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\n Please input a number.");
+                Console.WriteLine("\nInvalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\nPlease input a number.");
                 input = Console.ReadLine()!.Trim();
             }
-            Console.WriteLine("What is the card's special icons?\nEnter with spaces please.\n");
-            string icons = Console.ReadLine()!.Trim();
-            string[] iconsArray = icons.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            Console.WriteLine("What is the card's elements?\nEnter with spaces please.\n");
-            string elements = Console.ReadLine()!.Trim();
-            string[] elementsArray = elements.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            Console.WriteLine("What is the card's code?");
+
+            //Ask user for special icons
+            do
+            {
+                Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
+                icons = Console.ReadLine()!.Trim();
+                iconsArray = icons.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                if (AccidentalCharacterCheck(iconsArray))
+                {
+                    Console.WriteLine(errorMsg);
+                }
+            }
+            while (AccidentalCharacterCheck(iconsArray));
+
+            //Ask user for elements
+            do
+            {
+                Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
+                elements = Console.ReadLine()!.Trim();
+                elementsArray = elements.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                if (AccidentalCharacterCheck(elementsArray))
+                {
+                    Console.WriteLine(errorMsg);
+                }
+            }
+            while (AccidentalCharacterCheck(elementsArray));
+
+            Console.WriteLine("\nWhat is the card's code?");
             string code = Console.ReadLine()!.Trim().ToUpper();
             while (CardRegex(code) != true)
             {
-                Console.WriteLine("Please enter a valid card code.");
+                Console.WriteLine("\nWhat you entered did not match the pattern. Please enter a valid card code.");
                 code = Console.ReadLine()!.Trim().ToUpper();
             }
+
             Console.WriteLine("How many copies are there?");
             int copies;
             input = Console.ReadLine()!.Trim();
             while (int.TryParse(input, out copies) != true || copies == 0)
             {
-                Console.WriteLine("Invalid number or 0 was inputted.\nThere shouldn't be 0 copies of a card in the collection.\nPlease enter a valid number.");
+                Console.WriteLine("\nInvalid number or 0 was inputted.\nThere shouldn't be 0 copies of a card in the collection.\nPlease enter a valid number.");
                 input = Console.ReadLine()!.Trim();
             }
-            Console.WriteLine("Is this card a foil?\nEnter \'y\' for yes and \'n\' for no.");
+
+            Console.WriteLine("\nIs this card a foil?\nEnter \'y\' for yes and \'n\' for no.");
             char foilValid = Convert.ToChar(Console.ReadLine()!.Trim().ToLower());
             while (foilValid != 'y' && foilValid != 'n')
             {
@@ -111,6 +148,23 @@ namespace FFTCG_collection
             {
                 return false;
             }
+        }
+        private static bool AccidentalCharacterCheck(string[] iconsAndElements)
+        {
+            Console.WriteLine(iconsAndElements.Length);
+            string spaceRegex = @"[^a-zA-Z0-9',]"; //Exclude all non-alphanumeric characters except '. Some card names uses '
+
+            return iconsAndElements.Any(iconsAndElement => Regex.IsMatch(iconsAndElement, spaceRegex));
+            // Check every element in the array
+        }
+        private static string CheckEmptyString(string input)
+        {
+            while (String.IsNullOrEmpty(input))
+            {
+                Console.WriteLine("\nNo input detected. Please re-enter.");
+                input = Console.ReadLine()!.Trim();
+            }
+            return input;
         }
     }
 }
