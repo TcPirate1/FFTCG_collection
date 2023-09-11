@@ -38,11 +38,11 @@ namespace FFTCG_collection
         {
             string input;
             Console.WriteLine("\nName of card: ");
-            string cardname = Console.ReadLine()!.Trim();
+            string cardname = FirstCharUpper(Console.ReadLine()!.Trim());
             Console.WriteLine("\nImage location: ");
             string image = Console.ReadLine()!.Trim();
             Console.WriteLine("\nWhat is the card's type?");
-            string type = Console.ReadLine()!.Trim();
+            string type = FirstCharUpper(Console.ReadLine()!.Trim());
             Console.WriteLine("\nWhat is the card's cost?");
             int cost;
             input = Console.ReadLine()!.Trim();
@@ -54,21 +54,23 @@ namespace FFTCG_collection
             Console.WriteLine("\nWhat is the card's special icons?\nEnter with spaces please.\n");
             string icons = Console.ReadLine()!.Trim();
             string[] iconsArray = icons.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            FirstCharUpper(iconsArray);
             while (AccidentalCharacterCheck(iconsArray) == true)
             {
                 Console.WriteLine("You might of mistakenly typed a non-alphanumeric character.\nRe-enter please.");
                 icons = Console.ReadLine()!.Trim();
             }
-            Console.WriteLine(AccidentalCharacterCheck(iconsArray));
+            AccidentalCharacterCheck(iconsArray);
             Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
             string elements = Console.ReadLine()!.Trim();
             string[] elementsArray = elements.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            FirstCharUpper(elementsArray);
             while (AccidentalCharacterCheck(elementsArray) == true)
             {
                 Console.WriteLine("You might of mistakenly typed a non-alphanumeric character.\nRe-enter please.");
                 elements = Console.ReadLine()!.Trim();
             }
-            Console.WriteLine(AccidentalCharacterCheck(elementsArray));
+            AccidentalCharacterCheck(elementsArray);
             Console.WriteLine("\nWhat is the card's code?");
             string code = Console.ReadLine()!.Trim().ToUpper();
             while (CardRegex(code) != true)
@@ -126,22 +128,35 @@ namespace FFTCG_collection
         }
         private static bool AccidentalCharacterCheck(string[] iconsAndElements)
         {
-            Console.WriteLine(iconsAndElements.Length);
             if (iconsAndElements.Length > 0)
             {
-                string spaceRegex = @"[^a-zA-Z0-9]";
+                string spaceRegex = @"^[a-zA-Z0-9']+$";
 
                 foreach (string iconsAndElement in iconsAndElements)
                 {
                     bool nonAlphanumeric = Regex.IsMatch(iconsAndElement, spaceRegex);
 
-                    if (nonAlphanumeric)
+                    if (!nonAlphanumeric)
                     {
                         return true;
                     }
                 }
             }
             return false;
+        }
+        private static string FirstCharUpper(string input)
+        {
+            return $"{char.ToUpper(input[0])}{input[1..]}";
+        }
+        private static string[] FirstCharUpper(string[] input)
+        {
+            string[] result = new string[input.Length];
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                result[i] = FirstCharUpper(input[i]);
+            }
+            return result;
         }
     }
 }
