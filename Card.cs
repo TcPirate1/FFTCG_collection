@@ -47,6 +47,7 @@ namespace FFTCG_collection
             Console.WriteLine("\nName of card: ");
             string cardname = Console.ReadLine()!.Trim();
             CheckEmptyString(cardname);
+            FirstCharUpper(cardname);
 
             Console.WriteLine("\nImage location: ");
             string image = Console.ReadLine()!.Trim();
@@ -55,6 +56,7 @@ namespace FFTCG_collection
             Console.WriteLine("\nWhat is the card's type?");
             string type = Console.ReadLine()!.Trim();
             CheckEmptyString(type);
+            FirstCharUpper(type);
 
             Console.WriteLine("\nWhat is the card's cost?");
             input = Console.ReadLine()!.Trim();
@@ -70,6 +72,7 @@ namespace FFTCG_collection
                 Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
                 icons = Console.ReadLine()!.Trim();
                 iconsArray = icons.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                FirstCharUpper(iconsArray);
 
                 if (AccidentalCharacterCheck(iconsArray))
                 {
@@ -84,6 +87,7 @@ namespace FFTCG_collection
                 Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
                 elements = Console.ReadLine()!.Trim();
                 elementsArray = elements.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                FirstCharUpper(elementsArray);
 
                 if (AccidentalCharacterCheck(elementsArray))
                 {
@@ -152,7 +156,7 @@ namespace FFTCG_collection
         private static bool AccidentalCharacterCheck(string[] iconsAndElements)
         {
             Console.WriteLine(iconsAndElements.Length);
-            string spaceRegex = @"[^a-zA-Z0-9',]"; //Exclude all non-alphanumeric characters except '. Some card names uses '
+            string spaceRegex = @"^[a-zA-Z0-9',]+$"; //Some card names uses ' and commas are the delimiter.
 
             return iconsAndElements.Any(iconsAndElement => Regex.IsMatch(iconsAndElement, spaceRegex));
             // Check every element in the array
@@ -165,6 +169,20 @@ namespace FFTCG_collection
                 input = Console.ReadLine()!.Trim();
             }
             return input;
+        }
+        private static string FirstCharUpper(string input)
+        {
+            return $"{char.ToUpper(input[0])}{input[1..]}";
+        }
+        private static string[] FirstCharUpper(string[] input)
+        {
+            string[] result = new string[input.Length];
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                result[i] = FirstCharUpper(input[i]);
+            }
+            return result;
         }
     }
 }
