@@ -15,6 +15,10 @@ string dbCluster = Environment.GetEnvironmentVariable("ATLAS_URI")!;
 MongoClient client = new(dbCluster);
 
 var cardCollection = client.GetDatabase("FFCollection").GetCollection<BsonDocument>("cards");
+// Works for adding new document
+
+var cardSearch = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+// Works for searching through a document (refer to this SO answer: https://stackoverflow.com/questions/67341056/mongodb-filterdefinition-and-interfaces-in-c-sharp)
 
 bool repeat;
 do
@@ -38,7 +42,7 @@ do
                 repeat = true;
                 break;
             case 2:
-                Console.WriteLine("Searching for card...");
+                Card.CardFind(cardSearch);
                 repeat = true;
                 break;
             default:

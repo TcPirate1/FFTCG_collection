@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;
+using MongoDB.Driver;
 
 namespace FFTCG_collection
 {
@@ -33,7 +34,8 @@ namespace FFTCG_collection
             Copies = copies;
             Foil = foil;
         }
-
+        
+        // Method for adding cards to MongoDB
         public static BsonDocument CardAdd()
         {
             string errorMsg = "You might of mistakenly typed a non-alphanumeric character that isn't ' .\nPlease re-enter.";
@@ -139,6 +141,50 @@ namespace FFTCG_collection
             };
 
             return newDocument;
+        }
+        // Method to search for card in MongoDB
+        internal static void CardFind(IMongoCollection<Card> card)
+        {
+            Console.WriteLine("\nWould you like to find by code or name? c = code, n = name");
+            char input = Convert.ToChar(Console.ReadLine()!.ToLower());
+            while (input != 'c' && input != 'n')
+            {
+                Console.WriteLine("Please enter \"c\" or \"n\"");
+                input = Convert.ToChar(Console.ReadLine()!.ToLower());
+            }
+            if (input == 'c')
+            {
+                Console.WriteLine("Enter code of the card\n");
+                string code = Console.ReadLine()!.Trim().ToUpper();
+                while (CardRegex(code) != true)
+                {
+                    Console.WriteLine("Invalid card code. Please re-enter.");
+                    code = Console.ReadLine()!.Trim().ToUpper();
+                }
+                var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
+                var searchResult = card.Find(filter).ToList();
+                foreach (var cardResult in searchResult)
+                {
+                    Console.WriteLine(cardResult);
+                }
+            }
+            if (input == 'n')
+            {
+                Console.WriteLine("Enter the name of the card\n");
+                string name = Console.ReadLine()!.Trim().ToUpper();
+                while (CardRegex(name) == true)
+                {
+                    Console.WriteLine("Invalid name. Please re-enter");
+                    name = Console.ReadLine()!.Trim().ToUpper();
+                }
+                string notUppercase = FirstCharUpper(name.ToLower());
+                var filter = Builders<Card>.Filter.Eq(card => card.Name, notUppercase);
+                var searchResult = card.Find(filter).ToList();
+                foreach (var cardResult in searchResult)
+                {
+                    Console.WriteLine(cardResult);
+                }
+            }
         }
         private static bool CardRegex(string regex)
         {
