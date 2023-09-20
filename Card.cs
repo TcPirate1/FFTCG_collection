@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using System.Text.RegularExpressions;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization.Attributes;
@@ -47,7 +42,7 @@ namespace FFTCG_collection
         }
         
         // Method for adding cards to MongoDB
-        public static BsonDocument CardAdd()
+        internal static BsonDocument CardAdd()
         {
             string input;
             int cost;
@@ -70,7 +65,7 @@ namespace FFTCG_collection
             input = Console.ReadLine()!.Trim();
             while (int.TryParse(input, out cost) != true || cost < 1 || cost > 11)
             {
-                Console.WriteLine("\nInvalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\nPlease input a number.");
+                Console.WriteLine("\nInvalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\nPlease input a number between the range.");
                 input = Console.ReadLine()!.Trim();
             }
 
@@ -153,7 +148,7 @@ namespace FFTCG_collection
                 var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
-                    Console.WriteLine(cardResult.ToJson());
+                    Console.WriteLine(cardResult.ToString());
                 }
             }
             if (input == 'n')
@@ -170,7 +165,7 @@ namespace FFTCG_collection
                 var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
-                    Console.WriteLine(cardResult.ToJson());
+                    Console.WriteLine(cardResult.ToString());
                 }
             }
         }
@@ -219,6 +214,18 @@ namespace FFTCG_collection
                 result[i] = FirstCharUpper(input[i]);
             }
             return result;
+        }
+        public override string ToString()
+        {
+            // Convert the result into a string
+            if (Foil == false)
+            {
+                return $"There are {Copies} copies of {Name}({Code}), they are not foil.";
+            }
+            else
+            {
+                return $"There are {Copies} copies of {Name}({Code}), they're foil.";
+            }
         }
     }
 }
