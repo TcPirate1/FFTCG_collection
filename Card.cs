@@ -6,20 +6,31 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;
 using MongoDB.Driver;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace FFTCG_collection
 {
     internal class Card
     {
+        [BsonId]
         public ObjectId _id { get; set; }
+        [BsonElement("Card_name")]
         private string Name { get; set; }
+        [BsonElement("Image_location")]
         private string Image { get; set; }
+        [BsonElement("Type")]
         private string Type { get; set; }
+        [BsonElement("Cost")]
         private int Cost { get; set; }
+        [BsonElement("Special_icons")]
         private string[] Special_icons { get; set; }
+        [BsonElement("Elements")]
         private string[] Elements { get; set; }
+        [BsonElement("Card_code")]
         private string Code { get; set; }
+        [BsonElement("Copies")]
         private int Copies { get; set; }
+        [BsonElement("Foil")]
         private bool Foil { get; set; }
 
         public Card(string name, string image, string type, int cost, string[] special_icons, string[] elements, string code, int copies, bool foil)
@@ -128,13 +139,13 @@ namespace FFTCG_collection
 
             var newDocument = new BsonDocument
             {
-                { "Card Name", newCard.Name },
-                { "Image Location", newCard.Image},
+                { "Card_name", newCard.Name },
+                { "Image_location", newCard.Image},
                 { "Type", newCard.Type},
                 { "Cost", newCard.Cost},
-                { "Special Icons", new BsonArray(newCard.Special_icons)},
+                { "Special_icons", new BsonArray(newCard.Special_icons)},
                 { "Elements", new BsonArray(newCard.Elements)},
-                { "Card code", newCard.Code},
+                { "Card_code", newCard.Code},
                 { "Copies", newCard.Copies},
                 { "Foil?", newCard.Foil}
 
@@ -143,7 +154,7 @@ namespace FFTCG_collection
             return newDocument;
         }
         // Method to search for card in MongoDB
-        internal static void CardFind(IMongoCollection<Card> card)
+        internal static void CardFind(IMongoCollection<Card> cardCollection)
         {
             Console.WriteLine("\nWould you like to find by code or name? c = code, n = name");
             char input = Convert.ToChar(Console.ReadLine()!.ToLower());
@@ -162,7 +173,7 @@ namespace FFTCG_collection
                     code = Console.ReadLine()!.Trim().ToUpper();
                 }
                 var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
-                var searchResult = card.Find(filter).ToList();
+                var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
                     Console.WriteLine(cardResult);
@@ -179,7 +190,7 @@ namespace FFTCG_collection
                 }
                 string notUppercase = FirstCharUpper(name.ToLower());
                 var filter = Builders<Card>.Filter.Eq(card => card.Name, notUppercase);
-                var searchResult = card.Find(filter).ToList();
+                var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
                     Console.WriteLine(cardResult);
@@ -229,6 +240,10 @@ namespace FFTCG_collection
                 result[i] = FirstCharUpper(input[i]);
             }
             return result;
+        }
+        public override string ToString()
+        {
+            return $"Card Name: {Name}, Image Location: {Image}, Type: {Type}, Cost: {Cost}, Special Icons: [{string.Join(", ", Special_icons)}], Elements: [{string.Join(", ", Elements)}], Code: {Code}, Copies: {Copies}, Foil: {Foil}";
         }
     }
 }
