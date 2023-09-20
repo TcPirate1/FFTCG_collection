@@ -13,7 +13,7 @@ namespace FFTCG_collection
     internal class Card
     {
         [BsonId]
-        public ObjectId _id { get; set; }
+        private ObjectId _id { get; set; }
         [BsonElement("Card_name")]
         private string Name { get; set; }
         [BsonElement("Image_location")]
@@ -30,7 +30,7 @@ namespace FFTCG_collection
         private string Code { get; set; }
         [BsonElement("Copies")]
         private int Copies { get; set; }
-        [BsonElement("Foil")]
+        [BsonElement("Foil?")]
         private bool Foil { get; set; }
 
         public Card(string name, string image, string type, int cost, string[] special_icons, string[] elements, string code, int copies, bool foil)
@@ -49,18 +49,13 @@ namespace FFTCG_collection
         // Method for adding cards to MongoDB
         public static BsonDocument CardAdd()
         {
-            string errorMsg = "You might of mistakenly typed a non-alphanumeric character that isn't ' .\nPlease re-enter.";
-            string icons;
-            string[] iconsArray;
-            string elements;
-            string[] elementsArray;
             string input;
             int cost;
 
             Console.WriteLine("\nName of card: ");
             string cardname = Console.ReadLine()!.Trim();
             CheckEmptyString(cardname);
-            FirstCharUpper(cardname);
+            cardname = FirstCharUpper(cardname);
 
             Console.WriteLine("\nImage location: ");
             string image = Console.ReadLine()!.Trim();
@@ -69,7 +64,7 @@ namespace FFTCG_collection
             Console.WriteLine("\nWhat is the card's type?");
             string type = Console.ReadLine()!.Trim();
             CheckEmptyString(type);
-            FirstCharUpper(type);
+            type = FirstCharUpper(type);
 
             Console.WriteLine("\nWhat is the card's cost?");
             input = Console.ReadLine()!.Trim();
@@ -80,34 +75,16 @@ namespace FFTCG_collection
             }
 
             //Ask user for special icons
-            do
-            {
-                Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
-                icons = Console.ReadLine()!.Trim();
-                iconsArray = icons.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                FirstCharUpper(iconsArray);
-
-                if (AccidentalCharacterCheck(iconsArray))
-                {
-                    Console.WriteLine(errorMsg);
-                }
-            }
-            while (AccidentalCharacterCheck(iconsArray));
+            Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
+            string icons = Console.ReadLine()!.Trim();
+            string[] iconsArray = icons.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            iconsArray = FirstCharUpper(iconsArray);
 
             //Ask user for elements
-            do
-            {
-                Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
-                elements = Console.ReadLine()!.Trim();
-                elementsArray = elements.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                FirstCharUpper(elementsArray);
-
-                if (AccidentalCharacterCheck(elementsArray))
-                {
-                    Console.WriteLine(errorMsg);
-                }
-            }
-            while (AccidentalCharacterCheck(elementsArray));
+            Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
+            string elements = Console.ReadLine()!.Trim();
+            string[] elementsArray = elements.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            elementsArray = FirstCharUpper(elementsArray);
 
             Console.WriteLine("\nWhat is the card's code?");
             string code = Console.ReadLine()!.Trim().ToUpper();
@@ -176,7 +153,7 @@ namespace FFTCG_collection
                 var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
-                    Console.WriteLine(cardResult);
+                    Console.WriteLine(cardResult.ToJson());
                 }
             }
             if (input == 'n')
@@ -193,7 +170,7 @@ namespace FFTCG_collection
                 var searchResult = cardCollection.Find(filter).ToList();
                 foreach (var cardResult in searchResult)
                 {
-                    Console.WriteLine(cardResult);
+                    Console.WriteLine(cardResult.ToJson());
                 }
             }
         }
@@ -210,14 +187,6 @@ namespace FFTCG_collection
                 return false;
             }
         }
-        private static bool AccidentalCharacterCheck(string[] iconsAndElements)
-        {
-            Console.WriteLine(iconsAndElements.Length);
-            string spaceRegex = @"^[a-zA-Z0-9',]+$"; //Some card names uses ' and commas are the delimiter.
-
-            return iconsAndElements.Any(iconsAndElement => Regex.IsMatch(iconsAndElement, spaceRegex));
-            // Check every element in the array
-        }
         private static string CheckEmptyString(string input)
         {
             while (String.IsNullOrEmpty(input))
@@ -229,6 +198,16 @@ namespace FFTCG_collection
         }
         private static string FirstCharUpper(string input)
         {
+            string []segments = input.Split(new char[] {' ', '\''}, StringSplitOptions.RemoveEmptyEntries & StringSplitOptions.TrimEntries);
+            if (segments.Length > 1)
+            {
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    segments[i] = $"{char.ToUpper(segments[i][0])}{segments[i][1..]}";
+                }
+                input = string.Join(" ", segments);
+                return input;
+            }
             return $"{char.ToUpper(input[0])}{input[1..]}";
         }
         private static string[] FirstCharUpper(string[] input)
@@ -240,10 +219,6 @@ namespace FFTCG_collection
                 result[i] = FirstCharUpper(input[i]);
             }
             return result;
-        }
-        public override string ToString()
-        {
-            return $"Card Name: {Name}, Image Location: {Image}, Type: {Type}, Cost: {Cost}, Special Icons: [{string.Join(", ", Special_icons)}], Elements: [{string.Join(", ", Elements)}], Code: {Code}, Copies: {Copies}, Foil: {Foil}";
         }
     }
 }
