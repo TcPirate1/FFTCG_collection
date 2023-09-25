@@ -157,7 +157,21 @@ namespace FFTCG_collection
         }
         private static string FirstCharUpper(string input)
         {
-            return string.Join(" ", input.Split(new[] { ' ', '\'' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(s => $"{char.ToUpper(s[0])}{s[1..]}"));
+            string[] words = input.Split(' ');
+
+            var capitalizedWords = words.Select(word =>
+            {
+                if (word.Length > 0 && word[0] == '\'')
+                {
+                    return word.Length > 1 ? $"'{char.ToUpper(word[1])}{word[2..]}'" : word;
+                }
+                else
+                {
+                    return $"{char.ToUpper(word[0])}{word[1..]}";
+                }
+            });
+
+            return string.Join(" ", capitalizedWords);
         }
 
         private static string[] FirstCharUpper(string[] input)
