@@ -71,7 +71,7 @@ namespace FFTCG_collection
             string icons = Console.ReadLine()!.Trim();
             string[] iconsArray = ParseAndFormatInputArray(icons);
 
-            Console.WriteLine("\nWhat is the card's elements?\nEnter with spaces please.\n");
+            Console.WriteLine("\nWhat is the card's elements?\nEnter with , please.\n");
             string elements = Console.ReadLine()!.Trim();
             string[] elementsArray = ParseAndFormatInputArray(elements);
 
