@@ -157,21 +157,10 @@ namespace FFTCG_collection
         }
         private static string FirstCharUpper(string input)
         {
-            string[] words = input.Split(' ');
-
-            var capitalizedWords = words.Select(word =>
-            {
-                if (word.Length > 0 && word[0] == '\'')
-                {
-                    return word.Length > 1 ? $"'{char.ToUpper(word[1])}{word[2..]}'" : word;
-                }
-                else
-                {
-                    return $"{char.ToUpper(word[0])}{word[1..]}";
-                }
-            });
-
-            return string.Join(" ", capitalizedWords);
+            // Regex to match input to start of a string and whenever there is a space, single quote or hyphen and replace the character with the upper case version.
+            string regex = @"\b[a-zA-Z]|(?<=[ '-])[a-zA-Z]";
+            Regex capitalizeRegex = new(regex);
+            return capitalizeRegex.Replace(input, m => m.Value.ToUpper());
         }
 
         private static string[] FirstCharUpper(string[] input)
