@@ -27,6 +27,8 @@ do
     Console.WriteLine("0. Exit program.");
     Console.WriteLine("1. Add card to database.");
     Console.WriteLine("2. Search for card in database.");
+    Console.WriteLine("3. Remove card from database.");
+    Console.WriteLine("4. Update card in database.");
     try
     {
         int option = Convert.ToInt32(Console.ReadLine()?.Trim());
@@ -43,6 +45,14 @@ do
                 break;
             case 2:
                 Card.CardFind(cardSearch);
+                repeat = true;
+                break;
+            case 3:
+                Card.CardDelete(cardSearch);
+                repeat = true;
+                break;
+            case 4:
+                Card.CardUpdate(cardSearch);
                 repeat = true;
                 break;
             default:

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization.Attributes;
+using Sprache;
 
 namespace FFTCG_collection
 {
@@ -130,6 +131,32 @@ namespace FFTCG_collection
             }
         }
 
+        internal static void CardDelete(IMongoCollection<Card> cardCollection)
+        {
+            Console.WriteLine("Enter the card's code you want to DELETE\n");
+            string code = GetValidCardCode();
+            var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
+            var searchResult = cardCollection.Find(filter).ToList();
+            if (DeleteCardConfirmation(searchResult) == 'y')
+            {
+                cardCollection.DeleteOne(filter);
+                Console.WriteLine("Card deleted.");
+            }
+            else
+            {
+                Console.WriteLine("No cards deleted.");
+            }
+        }
+
+        internal static void CardUpdate(IMongoCollection<Card> cardCollection)
+        {
+            Console.WriteLine("Enter the card's code you want to UPDATE\n");
+            string code = GetValidCardCode();
+            var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
+            var searchResult = cardCollection.Find(filter).ToList();
+            UpdateCard(searchResult);
+        }
+
         private static void DisplaySearchResults(List<Card> searchResult)
         {
             // Find any document in database that matches the filter.
@@ -143,6 +170,46 @@ namespace FFTCG_collection
             else
             {
                 Console.WriteLine("No matching cards found.");
+            }
+        }
+
+        private static char DeleteCardConfirmation(List<Card> searchResult)
+        {
+            if (searchResult.Any())
+            {
+                foreach(var card in searchResult)
+                {
+                    Console.WriteLine($"You are about to delete {card.Name}({card.Code}).\nAre you sure? y = yes, n = no");
+                    char input = Console.ReadLine()!.Trim().ToLower()[0];
+                    while (input != 'y' && input != 'n')
+                    {
+                        Console.WriteLine("Please enter 'y' or 'n'");
+                        input = Console.ReadLine()!.Trim().ToLower()[0];
+                    }
+                    return input;
+                }
+            }
+            else
+            {
+                Console.WriteLine("No matching cards found.");
+            }
+            return 'n';
+        }
+
+        private static void UpdateCard(List<Card> searchResult)
+        {
+            if (searchResult.Any())
+            {
+                Console.WriteLine("Choose the field you want to update from the list below:\n");
+                Console.WriteLine("1. Name");
+                Console.WriteLine("2. Image location");
+                Console.WriteLine("3. Type");
+                Console.WriteLine("4. Cost");
+                Console.WriteLine("5. Special icons");
+                Console.WriteLine("6. Elements");
+                Console.WriteLine("7. Code");
+                Console.WriteLine("8. Copies");
+                Console.WriteLine("9. Foil status");
             }
         }
 
