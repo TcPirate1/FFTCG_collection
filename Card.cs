@@ -154,7 +154,14 @@ namespace FFTCG_collection
             string code = GetValidCardCode();
             var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
             var searchResult = cardCollection.Find(filter).ToList();
-            UpdateCard(searchResult);
+            if (searchResult.Any())
+            {
+                UpdateCard(cardCollection, filter, code);
+            }
+            else
+            {
+                Console.WriteLine("No matching cards found.");
+            }
         }
 
         private static void DisplaySearchResults(List<Card> searchResult)
@@ -196,20 +203,66 @@ namespace FFTCG_collection
             return 'n';
         }
 
-        private static void UpdateCard(List<Card> searchResult)
+        private static void UpdateCard(IMongoCollection<Card> cardCollection, FilterDefinition<Card> filter, string code)
         {
-            if (searchResult.Any())
+            Console.WriteLine("Choose the field you want to update from the list below:\n");
+            Console.WriteLine("1. Name");
+            Console.WriteLine("2. Image location");
+            Console.WriteLine("3. Type");
+            Console.WriteLine("4. Cost");
+            Console.WriteLine("5. Special icons");
+            Console.WriteLine("6. Elements");
+            Console.WriteLine("7. Code");
+            Console.WriteLine("8. Copies");
+            Console.WriteLine("9. Foil status");
+
+            int choice;
+            if (int.TryParse(Console.ReadLine(), out choice))
             {
-                Console.WriteLine("Choose the field you want to update from the list below:\n");
-                Console.WriteLine("1. Name");
-                Console.WriteLine("2. Image location");
-                Console.WriteLine("3. Type");
-                Console.WriteLine("4. Cost");
-                Console.WriteLine("5. Special icons");
-                Console.WriteLine("6. Elements");
-                Console.WriteLine("7. Code");
-                Console.WriteLine("8. Copies");
-                Console.WriteLine("9. Foil status");
+                string fieldToUpdate = "";
+                string newValue = "";
+
+                switch (choice)
+                {
+                    case 1:
+                        fieldToUpdate = "Name";
+                        Console.WriteLine("Enter the new card name for the 'Name' field:");
+                        newValue = FirstCharUpper(Console.ReadLine()!.Trim());
+                        break;
+                    case 2:
+                        fieldToUpdate = "Image";
+                        Console.WriteLine("Enter the new URL for the 'Image' field:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 3:
+                        fieldToUpdate = "Type";
+                        Console.WriteLine("Enter the new card type for the 'Type' field:");
+                        newValue = FirstCharUpper(Console.ReadLine()!.Trim());
+                        break;
+                    // TODO: Add other fields here.
+                    default:
+                        Console.WriteLine("Invalid choice. No field updated.");
+                        return;
+                }
+
+                // Create an update definition to specify the field to update and the new value.
+                var update = Builders<Card>.Update.Set(fieldToUpdate, newValue);
+
+                // Use the UpdateMany method to update all matching documents in the collection.
+                var updateResult = cardCollection.UpdateMany(filter, update);
+
+                if (updateResult.ModifiedCount > 0)
+                {
+                    Console.WriteLine($"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
+                }
+                else
+                {
+                    Console.WriteLine("No documents were updated.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid choice. No field updated.");
             }
         }
 

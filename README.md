@@ -7,7 +7,8 @@ Console app to manage collection of cards. This differs from the [Python version
 ![Searching for card by code](find_card_by_code.PNG?raw=true)
 
 ## TODO list
+
 - ~~Get the application to search in project root rather than in /bin/Debug/net6.0~~
 - ~~Adding cards to the database.~~ First document added.
 - ~~Create function to search for a card~~ Can search by name or code
-- Create function to edit a card.
+- ~~Create function to edit a card.~~ Test the function to make sure its working.
