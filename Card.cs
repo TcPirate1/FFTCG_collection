@@ -226,20 +226,49 @@ namespace FFTCG_collection
                 {
                     case 1:
                         fieldToUpdate = "Name";
-                        Console.WriteLine("Enter the new card name for the 'Name' field:");
+                        Console.WriteLine("Enter the new card name:");
                         newValue = FirstCharUpper(Console.ReadLine()!.Trim());
                         break;
                     case 2:
                         fieldToUpdate = "Image";
-                        Console.WriteLine("Enter the new URL for the 'Image' field:");
+                        Console.WriteLine("Enter the new URL for the card:");
                         newValue = Console.ReadLine()!.Trim();
                         break;
                     case 3:
                         fieldToUpdate = "Type";
-                        Console.WriteLine("Enter the new card type for the 'Type' field:");
+                        Console.WriteLine("Enter the new type for the card:");
                         newValue = FirstCharUpper(Console.ReadLine()!.Trim());
                         break;
-                    // TODO: Add other fields here.
+                    case 4:
+                        fieldToUpdate = "Cost";
+                        Console.WriteLine("Enter the new cost for the card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 5:
+                        fieldToUpdate = "Special_icons";
+                        Console.WriteLine("Enter the new Special Icons for the card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 6:
+                        fieldToUpdate = "Elements";
+                        Console.WriteLine("Enter the new Elements for the card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 7:
+                        fieldToUpdate = "Card_code";
+                        Console.WriteLine("Enter the new Code for the card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 8:
+                        fieldToUpdate = "Copies";
+                        Console.WriteLine("Enter the new value for number of Copies of this card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
+                    case 9:
+                        fieldToUpdate = "Foil?";
+                        Console.WriteLine("Enter the new Foil Status of this card:");
+                        newValue = Console.ReadLine()!.Trim();
+                        break;
                     default:
                         Console.WriteLine("Invalid choice. No field updated.");
                         return;
