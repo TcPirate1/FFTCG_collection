@@ -12,33 +12,33 @@ namespace FFTCG_collection
         private ObjectId Id { get; set; }
 
         [BsonElement("Card_name")]
-        private string Name { get; set; }
+        private string Name { get; }
 
         [BsonElement("Image_location")]
-        private string Image { get; set; }
+        private string Image { get; }
 
         [BsonElement("Type")]
-        private string Type { get; set; }
+        private string Type { get; }
 
         [BsonElement("Cost")]
-        private int Cost { get; set; }
+        private int Cost { get; }
 
         [BsonElement("Special_icons")]
-        private string[] SpecialIcons { get; set; }
+        private string[] SpecialIcons { get; }
 
         [BsonElement("Elements")]
-        private string[] Elements { get; set; }
+        private string[] Elements { get; }
 
         [BsonElement("Card_code")]
-        private string Code { get; set; }
+        private string Code { get; }
 
         [BsonElement("Copies")]
-        private int Copies { get; set; }
+        private int Copies { get; }
 
         [BsonElement("Foil?")]
-        private bool IsFoil { get; set; }
+        private bool IsFoil { get; }
 
-        public Card(string name, string image, string type, int cost, string[] specialIcons, string[] elements, string code, int copies, bool isFoil)
+        public Card(string name, string image, string type, int cost, IEnumerable<string> specialIcons, IEnumerable<string> elements, string code, int copies, bool isFoil)
         {
             Name = FirstCharUpper(name);
             Image = image.Trim();
@@ -216,11 +216,10 @@ namespace FFTCG_collection
             Console.WriteLine("8. Copies");
             Console.WriteLine("9. Foil status");
 
-            int choice;
-            if (int.TryParse(Console.ReadLine(), out choice))
+            if (int.TryParse(Console.ReadLine(), out int choice))
             {
-                string fieldToUpdate = "";
-                string newValue = "";
+                string fieldToUpdate;
+                string newValue;
 
                 switch (choice)
                 {
@@ -280,14 +279,9 @@ namespace FFTCG_collection
                 // Use the UpdateMany method to update all matching documents in the collection.
                 var updateResult = cardCollection.UpdateMany(filter, update);
 
-                if (updateResult.ModifiedCount > 0)
-                {
-                    Console.WriteLine($"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
-                }
-                else
-                {
-                    Console.WriteLine("No documents were updated.");
-                }
+                Console.WriteLine(updateResult.ModifiedCount <= 0
+                    ? "No documents were updated."
+                    : $"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
             }
             else
             {
@@ -307,12 +301,12 @@ namespace FFTCG_collection
         private static string FirstCharUpper(string input)
         {
             // Regex to match input to start of a string and whenever there is a space, single quote or hyphen and replace the character with the upper case version.
-            string regex = @"\b[a-zA-Z]|(?<=[ '-])[a-zA-Z]";
+            const string regex = @"\b[a-zA-Z]|(?<=[ '-])[a-zA-Z]";
             Regex capitalizeRegex = new(regex);
             return capitalizeRegex.Replace(input, m => m.Value.ToUpper());
         }
 
-        private static string[] FirstCharUpper(string[] input)
+        private static string[] FirstCharUpper(IEnumerable<string> input)
         {
             return input.Select(FirstCharUpper).ToArray();
         }
@@ -320,8 +314,8 @@ namespace FFTCG_collection
         private static bool CardRegex(string regex)
         {
             // Regex for regular and promo card codes
-            string cardCodeRegex = @"^\d{1,2}-\d{3}[CRHLS]+$";
-            string promoCodeRegex = @"^PR-\d{3}";
+            const string cardCodeRegex = @"^\d{1,2}-\d{3}[CRHLS]+$";
+            const string promoCodeRegex = @"^PR-\d{3}";
             Regex normalRegex = new(cardCodeRegex);
             Regex promoRegex = new(promoCodeRegex);
             return normalRegex.IsMatch(regex) || promoRegex.IsMatch(regex);
@@ -356,8 +350,7 @@ namespace FFTCG_collection
         private static int GetValidCost()
         {
             int cost;
-            string input;
-            input = Console.ReadLine()!.Trim();
+            string input = Console.ReadLine()!.Trim();
             while (!int.TryParse(input, out cost) || cost < 1 || cost > 11)
             {
                 Console.WriteLine("\nInvalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\nPlease input a number between the range.");
@@ -368,8 +361,7 @@ namespace FFTCG_collection
         private static int GetValidCopies()
         {
             int copies;
-            string input;
-            input = Console.ReadLine()!.Trim();
+            string input = Console.ReadLine()!.Trim();
             while (!int.TryParse(input, out copies) || copies == 0)
             {
                 Console.WriteLine("\nInvalid number or 0 was inputted.\nThere shouldn't be 0 copies of a card in the collection.\nPlease enter a valid number.");
@@ -380,7 +372,7 @@ namespace FFTCG_collection
 
         private static string[] ParseAndFormatInputArray(string input)
         {
-            // Splits the array by commas and then capatalizes the words
+            // Splits the array by commas and then capitalizes the words
             string[] inputArray = input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return FirstCharUpper(inputArray);
         }

@@ -66,8 +66,9 @@ do
         repeat = true;
     }
 }
-while (repeat == true);
+while (repeat);
 
+// https://blog.jetbrains.com/dotnet/2023/05/22/resharper-2023-2-eap-2/
 static string? GetProjectRoot()
 {
     string currentDirectory = Directory.GetCurrentDirectory();
