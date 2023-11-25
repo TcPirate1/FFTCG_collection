@@ -23,7 +23,7 @@ var cardSearch = client.GetDatabase("FFCollection").GetCollection<Card>("cards")
 bool repeat = false;
 do
 {
-    Console.WriteLine("\nWelcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
+    Console.WriteLine("\nWelcome to the FFTCG collection app.\n(Please enter one of the following numbers to select the respective menu item)");
     Console.WriteLine("0. Exit program.");
     Console.WriteLine("1. Add card to database.");
     Console.WriteLine("2. Search for card in database.");
@@ -53,6 +53,10 @@ do
                 break;
             case 4:
                 Card.CardUpdate(cardSearch);
+                repeat = true;
+                break;
+            default:
+                Console.WriteLine("\nPlease enter one of the above numbers.\n");
                 repeat = true;
                 break;
         }
