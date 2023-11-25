@@ -20,7 +20,7 @@ var cardCollection = client.GetDatabase("FFCollection").GetCollection<BsonDocume
 var cardSearch = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
 // Works for searching through a document (refer to this SO answer: https://stackoverflow.com/questions/67341056/mongodb-filterdefinition-and-interfaces-in-c-sharp)
 
-bool repeat;
+bool repeat = false;
 do
 {
     Console.WriteLine("\nWelcome to the FFTCG collection app. How may I help you today? (Please enter the following number to select the respective menu item)");
@@ -55,9 +55,6 @@ do
                 Card.CardUpdate(cardSearch);
                 repeat = true;
                 break;
-            default:
-                repeat = false;
-                break;
         }
     }
     catch (Exception e)
@@ -66,8 +63,9 @@ do
         repeat = true;
     }
 }
-while (repeat);
+while (repeat == true);
 
+// Following URL explains why Resharper suggests a solo return statement here
 // https://blog.jetbrains.com/dotnet/2023/05/22/resharper-2023-2-eap-2/
 static string? GetProjectRoot()
 {
