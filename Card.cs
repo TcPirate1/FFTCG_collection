@@ -1,44 +1,42 @@
 ﻿using MongoDB.Bson;
-using System.Text.RegularExpressions;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization.Attributes;
-using Sprache;
 
 namespace FFTCG_collection
 {
-    internal class Card
+    internal class Card : CardFunctions
     {
         [BsonId]
         private ObjectId Id { get; set; }
 
         [BsonElement("Card_name")]
-        private string Name { get; set; }
+        private string Name { get; }
 
         [BsonElement("Image_location")]
-        private string Image { get; set; }
+        private string Image { get; }
 
         [BsonElement("Type")]
-        private string Type { get; set; }
+        private string Type { get; }
 
         [BsonElement("Cost")]
-        private int Cost { get; set; }
+        private int Cost { get; }
 
         [BsonElement("Special_icons")]
-        private string[] SpecialIcons { get; set; }
+        private string[] SpecialIcons { get; }
 
         [BsonElement("Elements")]
-        private string[] Elements { get; set; }
+        private string[] Elements { get; }
 
         [BsonElement("Card_code")]
-        private string Code { get; set; }
+        private string Code { get; }
 
         [BsonElement("Copies")]
-        private int Copies { get; set; }
+        private int Copies { get; }
 
         [BsonElement("Foil?")]
-        private bool IsFoil { get; set; }
+        private bool IsFoil { get; }
 
-        public Card(string name, string image, string type, int cost, string[] specialIcons, string[] elements, string code, int copies, bool isFoil)
+        public Card(string name, string image, string type, int cost, IEnumerable<string> specialIcons, IEnumerable<string> elements, string code, int copies, bool isFoil)
         {
             Name = FirstCharUpper(name);
             Image = image.Trim();
@@ -216,11 +214,10 @@ namespace FFTCG_collection
             Console.WriteLine("8. Copies");
             Console.WriteLine("9. Foil status");
 
-            int choice;
-            if (int.TryParse(Console.ReadLine(), out choice))
+            if (int.TryParse(Console.ReadLine(), out int choice))
             {
-                string fieldToUpdate = "";
-                string newValue = "";
+                string fieldToUpdate;
+                string newValue;
 
                 switch (choice)
                 {
@@ -280,122 +277,15 @@ namespace FFTCG_collection
                 // Use the UpdateMany method to update all matching documents in the collection.
                 var updateResult = cardCollection.UpdateMany(filter, update);
 
-                if (updateResult.ModifiedCount > 0)
-                {
-                    Console.WriteLine($"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
-                }
-                else
-                {
-                    Console.WriteLine("No documents were updated.");
-                }
+                Console.WriteLine(updateResult.ModifiedCount <= 0
+                    ? "No documents were updated."
+                    : $"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
             }
             else
             {
                 Console.WriteLine("Invalid choice. No field updated.");
             }
         }
-
-        private static string CheckEmptyString(string input)
-        {
-            while (string.IsNullOrWhiteSpace(input))
-            {
-                Console.WriteLine("\nNo input detected. Please re-enter.");
-                input = Console.ReadLine()!.Trim();
-            }
-            return input;
-        }
-        private static string FirstCharUpper(string input)
-        {
-            // Regex to match input to start of a string and whenever there is a space, single quote or hyphen and replace the character with the upper case version.
-            string regex = @"\b[a-zA-Z]|(?<=[ '-])[a-zA-Z]";
-            Regex capitalizeRegex = new(regex);
-            return capitalizeRegex.Replace(input, m => m.Value.ToUpper());
-        }
-
-        private static string[] FirstCharUpper(string[] input)
-        {
-            return input.Select(FirstCharUpper).ToArray();
-        }
-
-        private static bool CardRegex(string regex)
-        {
-            // Regex for regular and promo card codes
-            string cardCodeRegex = @"^\d{1,2}-\d{3}[CRHLS]+$";
-            string promoCodeRegex = @"^PR-\d{3}";
-            Regex normalRegex = new(cardCodeRegex);
-            Regex promoRegex = new(promoCodeRegex);
-            return normalRegex.IsMatch(regex) || promoRegex.IsMatch(regex);
-        }
-        private static string GetValidCardCode()
-        {
-            string code = Console.ReadLine()!.Trim().ToUpper();
-            return ValidateAndFormatCardCode(code);
-        }
-        private static string GetValidName()
-        {
-            // If name is equal to the regex it is not a valid card name.
-            string name = Console.ReadLine()!.Trim().ToUpper();
-            while (CardRegex(name))
-            {
-                Console.WriteLine("Invalid name. Please re-enter");
-                name = Console.ReadLine()!.Trim().ToUpper();
-            }
-            return FirstCharUpper(name.ToLower());
-        }
-        private static string ValidateAndFormatCardCode(string code)
-        {
-            code = code.Trim().ToUpper();
-            while (!CardRegex(code))
-            {
-                Console.WriteLine("Invalid card code. Please re-enter.");
-                code = Console.ReadLine()!.Trim().ToUpper();
-            }
-            return code;
-        }
-
-        private static int GetValidCost()
-        {
-            int cost;
-            string input;
-            input = Console.ReadLine()!.Trim();
-            while (!int.TryParse(input, out cost) || cost < 1 || cost > 11)
-            {
-                Console.WriteLine("\nInvalid cost or you inputted a number lower than 1 and higher than 11.\nThere is currently no higher cost than 11.\nPlease input a number between the range.");
-                input = Console.ReadLine()!.Trim();
-            }
-            return cost;
-        }
-        private static int GetValidCopies()
-        {
-            int copies;
-            string input;
-            input = Console.ReadLine()!.Trim();
-            while (!int.TryParse(input, out copies) || copies == 0)
-            {
-                Console.WriteLine("\nInvalid number or 0 was inputted.\nThere shouldn't be 0 copies of a card in the collection.\nPlease enter a valid number.");
-                input = Console.ReadLine()!.Trim();
-            }
-            return copies;
-        }
-
-        private static string[] ParseAndFormatInputArray(string input)
-        {
-            // Splits the array by commas and then capatalizes the words
-            string[] inputArray = input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            return FirstCharUpper(inputArray);
-        }
-
-        private static bool GetIsFoil()
-        {
-            char foilValid = char.ToLower(Console.ReadLine()!.Trim()[0]);
-            while (foilValid != 'y' && foilValid != 'n')
-            {
-                Console.WriteLine("Invalid. Please enter either 'y' or 'n'");
-                foilValid = char.ToLower(Console.ReadLine()!.Trim()[0]);
-            }
-            return foilValid == 'y';
-        }
-
         public override string ToString()
         {
             // Return result as a string
