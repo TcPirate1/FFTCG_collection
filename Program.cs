@@ -38,9 +38,7 @@ do
                 repeat = false;
                 break;
             case 1:
-                cardCollection.InsertOne(Card.CardAdd());
-                Console.WriteLine("\nAdding card to collection...");
-                Console.WriteLine("\nCard added, returning to menu.");
+                Card.CardAdd(cardCollection);
                 repeat = true;
                 break;
             case 2:
