@@ -38,7 +38,14 @@ do
                 repeat = false;
                 break;
             case 1:
-                Card.CardAdd(cardCollection);
+                if (!Card.CardAdd(cardCollection))
+                {
+                    Console.WriteLine("Returning to main menu.");
+                }
+                else
+                {
+                    Console.WriteLine("Card added successfully!");
+                }
                 repeat = true;
                 break;
             case 2:

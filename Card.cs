@@ -49,63 +49,64 @@ namespace FFTCG_collection
             IsFoil = isFoil;
         }
 
-        internal static void CardAdd(IMongoCollection<BsonDocument> cardCollection)
+        internal static bool CardAdd(IMongoCollection<BsonDocument> cardCollection)
         {
             Console.WriteLine("\nWhat is the card's code?");
             string code = GetValidCardCode();
-            var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
-            if (filter != null)
+            var existingCard = cardCollection.Find(Builders<BsonDocument>.Filter.Eq("Card_code", code)).FirstOrDefault();
+
+            if (existingCard != null)
             {
-                Console.WriteLine($"{code} already exists. Failed to add card.");
+                Console.WriteLine($"'{code}' already exists. Failed to add card.");
+                return false;
             }
-            else
+
+            Console.WriteLine("\nName of card: ");
+            string cardName = Console.ReadLine()!.Trim();
+            cardName = FirstCharUpper(CheckEmptyString(cardName));
+
+            Console.WriteLine("\nImage location: ");
+            string image = Console.ReadLine()!.Trim();
+            CheckEmptyString(image);
+
+            Console.WriteLine("\nWhat is the card's type?");
+            string type = Console.ReadLine()!.Trim();
+            type = FirstCharUpper(CheckEmptyString(type));
+
+            Console.WriteLine("\nWhat is the card's cost?");
+            int cost = GetValidCost();
+
+            Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
+            string icons = Console.ReadLine()!.Trim();
+            string[] iconsArray = ParseAndFormatInputArray(icons);
+
+            Console.WriteLine("\nWhat is the card's elements?\nEnter with , please.\n");
+            string elements = Console.ReadLine()!.Trim();
+            string[] elementsArray = ParseAndFormatInputArray(elements);
+
+            Console.WriteLine("How many copies are there?");
+            int copies = GetValidCopies();
+
+            Console.WriteLine("\nIs this card a foil?\nEnter 'y' for yes and 'n' for no.");
+            bool isFoil = GetIsFoil();
+
+            var newCard = new Card(cardName, image, type, cost, iconsArray, elementsArray, code, copies, isFoil);
+
+            var newDocument = new BsonDocument
             {
-                Console.WriteLine("\nName of card: ");
-                string cardName = Console.ReadLine()!.Trim();
-                cardName = FirstCharUpper(CheckEmptyString(cardName));
+                { "Card_name", newCard.Name },
+                { "Image_location", newCard.Image},
+                { "Type", newCard.Type},
+                { "Cost", newCard.Cost},
+                { "Special_icons", new BsonArray(newCard.SpecialIcons)},
+                { "Elements", new BsonArray(newCard.Elements)},
+                { "Card_code", newCard.Code},
+                { "Copies", newCard.Copies},
+                { "Foil?", newCard.IsFoil}
+            };
+            cardCollection.InsertOne(newDocument);
 
-                Console.WriteLine("\nImage location: ");
-                string image = Console.ReadLine()!.Trim();
-                CheckEmptyString(image);
-
-                Console.WriteLine("\nWhat is the card's type?");
-                string type = Console.ReadLine()!.Trim();
-                type = FirstCharUpper(CheckEmptyString(type));
-
-                Console.WriteLine("\nWhat is the card's cost?");
-                int cost = GetValidCost();
-
-                Console.WriteLine("\nWhat is the card's special icons?\nEnter with , please.\n");
-                string icons = Console.ReadLine()!.Trim();
-                string[] iconsArray = ParseAndFormatInputArray(icons);
-
-                Console.WriteLine("\nWhat is the card's elements?\nEnter with , please.\n");
-                string elements = Console.ReadLine()!.Trim();
-                string[] elementsArray = ParseAndFormatInputArray(elements);
-
-                Console.WriteLine("How many copies are there?");
-                int copies = GetValidCopies();
-
-                Console.WriteLine("\nIs this card a foil?\nEnter 'y' for yes and 'n' for no.");
-                bool isFoil = GetIsFoil();
-
-                var newCard = new Card(cardName, image, type, cost, iconsArray, elementsArray, code, copies, isFoil);
-
-                var newDocument = new BsonDocument
-                {
-                    { "Card_name", newCard.Name },
-                    { "Image_location", newCard.Image},
-                    { "Type", newCard.Type},
-                    { "Cost", newCard.Cost},
-                    { "Special_icons", new BsonArray(newCard.SpecialIcons)},
-                    { "Elements", new BsonArray(newCard.Elements)},
-                    { "Card_code", newCard.Code},
-                    { "Copies", newCard.Copies},
-                    { "Foil?", newCard.IsFoil}
-                };
-
-                cardCollection.InsertOne(newDocument);
-            }
+            return true;
         }
 
         internal static void CardFind(IMongoCollection<Card> cardCollection)
