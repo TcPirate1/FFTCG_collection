@@ -20,7 +20,7 @@ var cardCollection = client.GetDatabase("FFCollection").GetCollection<BsonDocume
 var cardSearch = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
 // Works for searching through a document (refer to this SO answer: https://stackoverflow.com/questions/67341056/mongodb-filterdefinition-and-interfaces-in-c-sharp)
 
-bool repeat = false;
+bool repeat;
 do
 {
     Console.WriteLine("\nWelcome to the FFTCG collection app.\n(Please enter one of the following numbers to select the respective menu item)");
