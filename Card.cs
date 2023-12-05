@@ -6,35 +6,36 @@ namespace FFTCG_collection
 {
     internal class Card : CardFunctions
     {
+        // public properties so that MongoDB driver can access them
         [BsonId]
-        private ObjectId Id { get; set; }
+        public ObjectId Id { get; set; }
 
         [BsonElement("Card_name")]
-        private string Name { get; }
+        public string Name { get; private set;}
 
         [BsonElement("Image_location")]
-        private string Image { get; }
+        public string Image { get; private set;}
 
         [BsonElement("Type")]
-        private string Type { get; }
+        public string Type { get; private set;}
 
         [BsonElement("Cost")]
-        private int Cost { get; }
+        public int Cost { get; private set;}
 
         [BsonElement("Special_icons")]
-        private string[] SpecialIcons { get; }
+        public string[] SpecialIcons { get; private set;}
 
         [BsonElement("Elements")]
-        private string[] Elements { get; }
+        public string[] Elements { get; private set;}
 
         [BsonElement("Card_code")]
-        private string Code { get; }
+        public string Code { get; private set;}
 
         [BsonElement("Copies")]
-        private int Copies { get; }
+        public int Copies { get; private set;}
 
         [BsonElement("Foil?")]
-        private bool IsFoil { get; }
+        public bool IsFoil { get; private set;}
 
         public Card(string name, string image, string type, int cost, IEnumerable<string> specialIcons, IEnumerable<string> elements, string code, int copies, bool isFoil)
         {
