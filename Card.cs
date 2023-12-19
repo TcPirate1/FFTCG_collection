@@ -36,8 +36,10 @@ namespace FFTCG_collection
 
         [BsonElement("Foil?")]
         public bool IsFoil { get; private set;}
+        [BsonElement("Foil_copies")]
+        public int FoilCopies { get; private set;}
 
-        public Card(string name, string image, string type, int cost, IEnumerable<string> specialIcons, IEnumerable<string> elements, string code, int copies, bool isFoil)
+        public Card(string name, string image, string type, int cost, IEnumerable<string> specialIcons, IEnumerable<string> elements, string code, int copies, bool isFoil, int foilCopies)
         {
             Name = FirstCharUpper(name);
             Image = image.Trim();
@@ -48,6 +50,7 @@ namespace FFTCG_collection
             Code = ValidateAndFormatCardCode(code);
             Copies = copies;
             IsFoil = isFoil;
+            FoilCopies = foilCopies;
         }
 
         internal static bool CardAdd(IMongoCollection<BsonDocument> cardCollection)
@@ -68,7 +71,6 @@ namespace FFTCG_collection
 
             Console.WriteLine("\nImage location: ");
             string image = Console.ReadLine()!.Trim();
-            CheckEmptyString(image);
 
             Console.WriteLine("\nWhat is the card's type?");
             string type = Console.ReadLine()!.Trim();
@@ -91,7 +93,18 @@ namespace FFTCG_collection
             Console.WriteLine("\nIs this card a foil?\nEnter 'y' for yes and 'n' for no.");
             bool isFoil = GetIsFoil();
 
-            var newCard = new Card(cardName, image, type, cost, iconsArray, elementsArray, code, copies, isFoil);
+            int foilCopies;
+            if (isFoil)
+            {
+                Console.WriteLine("\nHow many foil copies are there?");
+                foilCopies = GetValidCopies();
+            }
+            else
+            {
+                foilCopies = 0;
+            }
+
+            var newCard = new Card(cardName, image, type, cost, iconsArray, elementsArray, code, copies, isFoil, foilCopies);
 
             var newDocument = new BsonDocument
             {
@@ -103,7 +116,8 @@ namespace FFTCG_collection
                 { "Elements", new BsonArray(newCard.Elements)},
                 { "Card_code", newCard.Code},
                 { "Copies", newCard.Copies},
-                { "Foil?", newCard.IsFoil}
+                { "Foil?", newCard.IsFoil},
+                { "Foil_copies", newCard.FoilCopies}
             };
             cardCollection.InsertOne(newDocument);
 
@@ -112,15 +126,21 @@ namespace FFTCG_collection
 
         internal static void CardFind(IMongoCollection<Card> cardCollection)
         {
-            Console.WriteLine("\nWould you like to find by code or name? c = code, n = name");
+            Console.WriteLine("What would you like to search for?\nl = find last card added, c = find card by code, n = find card by name");
             char input = Console.ReadLine()!.Trim().ToLower()[0];
-            while (input != 'c' && input != 'n')
+            while (input != 'c' && input != 'n' && input != 'l')
             {
-                Console.WriteLine("Please enter 'c' or 'n'");
+                Console.WriteLine("Please enter 'c' or 'n' or 'l'");
                 input = Console.ReadLine()!.Trim().ToLower()[0];
             }
 
-            if (input == 'c')
+            if (input == 'l')
+            {
+                var sort = Builders<Card>.Sort.Descending("_id");
+                var searchResult = cardCollection.Find(new BsonDocument()).Sort(sort).Limit(1).ToList();
+                DisplaySearchResults(searchResult);
+            }
+            else if (input == 'c')
             {
                 Console.WriteLine("Enter code of the card\n");
                 string code = GetValidCardCode();
@@ -128,7 +148,7 @@ namespace FFTCG_collection
                 var searchResult = cardCollection.Find(filter).ToList();
                 DisplaySearchResults(searchResult);
             }
-            else
+            else if (input == 'n')
             {
                 Console.WriteLine("Enter the name of the card\n");
                 string name = GetValidName();
@@ -222,11 +242,12 @@ namespace FFTCG_collection
             Console.WriteLine("7. Code");
             Console.WriteLine("8. Copies");
             Console.WriteLine("9. Foil status");
+            Console.WriteLine("10. Foil copies");
 
             if (int.TryParse(Console.ReadLine(), out int choice))
             {
                 string fieldToUpdate;
-                string newValue;
+                object newValue;
 
                 switch (choice)
                 {
@@ -248,32 +269,37 @@ namespace FFTCG_collection
                     case 4:
                         fieldToUpdate = "Cost";
                         Console.WriteLine("Enter the new cost for the card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = GetValidCost();
                         break;
                     case 5:
                         fieldToUpdate = "Special_icons";
                         Console.WriteLine("Enter the new Special Icons for the card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = ParseAndFormatInputArray(Console.ReadLine()!.Trim());
                         break;
                     case 6:
                         fieldToUpdate = "Elements";
                         Console.WriteLine("Enter the new Elements for the card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = ParseAndFormatInputArray(Console.ReadLine()!.Trim());
                         break;
                     case 7:
                         fieldToUpdate = "Card_code";
                         Console.WriteLine("Enter the new Code for the card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = GetValidCardCode();
                         break;
                     case 8:
                         fieldToUpdate = "Copies";
                         Console.WriteLine("Enter the new value for number of Copies of this card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = GetValidCopies();
                         break;
                     case 9:
                         fieldToUpdate = "Foil?";
                         Console.WriteLine("Enter the new Foil Status of this card:");
-                        newValue = Console.ReadLine()!.Trim();
+                        newValue = GetIsFoil();
+                        break;
+                    case 10:
+                        fieldToUpdate = "Foil_copies";
+                        Console.WriteLine("Enter the new value for number of Foil Copies of this card:");
+                        newValue = GetValidCopies();
                         break;
                     default:
                         Console.WriteLine("Invalid choice. No field updated.");
@@ -288,7 +314,7 @@ namespace FFTCG_collection
 
                 Console.WriteLine(updateResult.ModifiedCount <= 0
                     ? "No documents were updated."
-                    : $"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} cards with code {code}.");
+                    : $"Updated the '{fieldToUpdate}' field for {updateResult.ModifiedCount} card(s) with code {code}.");
             }
             else
             {
@@ -298,7 +324,7 @@ namespace FFTCG_collection
         public override string ToString()
         {
             // Return result as a string
-            string foilStatus = IsFoil ? "they're foil." : "they are not foil.";
+            string foilStatus = IsFoil ? $"There are {FoilCopies} foil." : "they are not foil.";
             return $"There are {Copies} copies of {Name}({Code}), {foilStatus}";
         }
     }

@@ -78,9 +78,9 @@ namespace FFTCG_collection
         {
             int copies;
             string input = Console.ReadLine()!.Trim();
-            while (!int.TryParse(input, out copies) || copies == 0)
+            while (!int.TryParse(input, out copies))
             {
-                Console.WriteLine("\nInvalid number or 0 was inputted.\nThere shouldn't be 0 copies of a card in the collection.\nPlease enter a valid number.");
+                Console.WriteLine("\nInvalid number.\nPlease enter a valid number.");
                 input = Console.ReadLine()!.Trim();
             }
             return copies;
