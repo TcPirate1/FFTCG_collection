@@ -8,4 +8,4 @@ Console app to manage collection of cards. This differs from the [Python version
 
 ## TODO list
 
-- GUI?
+- [GUI](https://github.com/TcPirate1/FF_collection_GUI)
