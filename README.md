@@ -9,3 +9,7 @@ Console app to manage collection of cards. This differs from the [Python version
 ## TODO list
 
 - [GUI](https://github.com/TcPirate1/FF_collection_GUI)
+
+- https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1860 (Remove Enumerate.Any functions for performance/clarity in Card.cs)
+
+- Add line before card result to add clarity.
