@@ -181,7 +181,7 @@ namespace FFTCG_collection
             string code = GetValidCardCode();
             var filter = Builders<Card>.Filter.Eq(card => card.Code, code);
             var searchResult = cardCollection.Find(filter).ToList();
-            if (searchResult.Any())
+            if (searchResult.Count != 0)
             {
                 UpdateCard(cardCollection, filter, code);
             }
@@ -194,7 +194,7 @@ namespace FFTCG_collection
         private static void DisplaySearchResults(List<Card> searchResult)
         {
             // Find any document in database that matches the filter.
-            if (searchResult.Any())
+            if (searchResult.Count != 0)
             {
                 foreach (var cardResult in searchResult)
                 {
@@ -209,7 +209,7 @@ namespace FFTCG_collection
 
         private static char DeleteCardConfirmation(List<Card> searchResult)
         {
-            if (searchResult.Any())
+            if (searchResult.Count != 0)
             {
                 foreach(var card in searchResult)
                 {
@@ -325,7 +325,7 @@ namespace FFTCG_collection
         {
             // Return result as a string
             string foilStatus = IsFoil ? $"There are {FoilCopies} foil." : "they are not foil.";
-            return $"There are {Copies} copies of {Name}({Code}), {foilStatus}";
+            return $"\nThere are {Copies} copies of {Name}({Code}), {foilStatus}";
         }
     }
 }

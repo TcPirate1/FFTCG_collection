@@ -81,8 +81,8 @@ static string? GetProjectRoot()
     string currentDirectory = Directory.GetCurrentDirectory();
     DirectoryInfo directory = new(currentDirectory);
 
-    // Traverse up the directory tree (from /bin/Debug/net6.0) until the solution file (e.g., .sln) is found
-    while (directory != null && !directory.GetFiles("*.sln").Any())
+    // Traverse up the directory tree (from /bin/Debug/net<version#>) until the solution file (e.g., .sln) is found
+    while (directory != null && directory.GetFiles("*.sln").Length == 0)
     {
         directory = directory.Parent!;
     }
