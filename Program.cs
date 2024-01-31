@@ -3,33 +3,92 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using FFTCG_collection;
 using CommandLine;
+using System.Globalization;
 
 Parser.Default.ParseArguments<Options>(args).WithParsed(o => {
-    if (o.Connect)
+    if (o.Add)
     {
-        while (PasswordAndUsername.HasPassword == false && PasswordAndUsername.HasUsername == false)
+        Card.CardAdd(AddCardCheckConnection());
+    }
+    else if (o.Search)
+    {
+        Card.CardFind(CheckConnection());
+    }
+    else if (o.Delete)
+    {
+        Card.CardDelete(CheckConnection());
+    }
+    else if (o.Update)
+    {
+        Card.CardUpdate(CheckConnection());
+    }
+    else
+    {
+        Console.WriteLine("Please enter a valid option.");
+    }
+});
+
+static IMongoCollection<BsonDocument> AddCardCheckConnection()
+{
+    while (PasswordAndUsername.HasPassword == false && PasswordAndUsername.HasUsername == false)
         {
+            MongoClient client;
+            string connectionString;
             Console.WriteLine("Please enter your MongoDB Atlas username and password to connect to the DB.");
             Console.WriteLine("Username:");
             string username = Console.ReadLine()!;
             Console.WriteLine("Password:");
             string password = Console.ReadLine()!;
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            PasswordAndUsername.HasUsername = true;
+            PasswordAndUsername.HasPassword = true;
+            try
             {
-                PasswordAndUsername.HasUsername = true;
-                PasswordAndUsername.HasPassword = true;
+                connectionString = $"mongodb+srv://{username}:{password}@cluster0.pp95tii.mongodb.net/"!;
+                client = new(connectionString);
+                client.GetDatabase("FFCollection").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
+                Console.WriteLine("Successfully connected to MongoDB Atlas.");
+                return client.GetDatabase("FFCollection").GetCollection<BsonDocument>("cards");
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine("Please enter a valid username and password.");
+                Console.WriteLine($"{e.Message}\nPlease enter a valid username and password.");
+                PasswordAndUsername.HasUsername = false;
+                PasswordAndUsername.HasPassword = false;
             }
         }
-        if (PasswordAndUsername.HasUsername == true && PasswordAndUsername.HasPassword == true)
+        return null!;
+}
+static IMongoCollection<Card> CheckConnection()
+{
+    while (PasswordAndUsername.HasPassword == false && PasswordAndUsername.HasUsername == false)
         {
-            Console.WriteLine("You are already connected to the database.\nYou do not need to connect again.");
+            MongoClient client;
+            string connectionString;
+            Console.WriteLine("Please enter your MongoDB Atlas username and password to connect to the DB.");
+            Console.WriteLine("Username:");
+            string username = Console.ReadLine()!;
+            Console.WriteLine("Password:");
+            string password = Console.ReadLine()!;
+            PasswordAndUsername.HasUsername = true;
+            PasswordAndUsername.HasPassword = true;
+            try
+            {
+                connectionString = $"mongodb+srv://{username}:{password}@cluster0.pp95tii.mongodb.net/"!;
+                client = new(connectionString);
+                client.GetDatabase("FFCollection").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
+                Console.WriteLine("Successfully connected to MongoDB Atlas.");
+                return client.GetDatabase("FFCollection").GetCollection<Card>("cards");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message}\nPlease enter a valid username and password.");
+                PasswordAndUsername.HasUsername = false;
+                PasswordAndUsername.HasPassword = false;
+            }
         }
-    };
-    });
+        return null!;
+}
+// Adding a document and finding documents use different interfaces (refer to this SO answer: https://stackoverflow.com/questions/67341056/mongodb-filterdefinition-and-interfaces-in-c-sharp)
 
 public static class PasswordAndUsername
 {
@@ -39,9 +98,6 @@ public static class PasswordAndUsername
 
 public class Options
 {
-    [Option('c', "connect", Required = true, HelpText = "Connect to MongoDB Atlas. Will ask for username & password")]
-    public bool Connect { get; set; }
-
     [Option('a', "add", Required = false, HelpText = "Add a card to the database.")]
     public bool Add { get; set; }
     
@@ -72,6 +128,15 @@ public class Options
 
 // var cardSearch = client.GetDatabase("FFCollection").GetCollection<Card>("cards");
 // // Works for searching through a document (refer to this SO answer: https://stackoverflow.com/questions/67341056/mongodb-filterdefinition-and-interfaces-in-c-sharp)
+
+// try {
+//     client.GetDatabase("FFCollection").RunCommand<BsonDocument>(new BsonDocument("ping", 1));
+//     Console.WriteLine("Connected to MongoDB Atlas.");
+// }
+// catch (Exception e)
+// {
+//     Console.WriteLine(e.Message);
+// }
 
 // bool repeat;
 // do

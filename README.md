@@ -16,3 +16,5 @@ Console app to manage collection of cards. This differs from the [Python version
 - [Convert to CLI app](https://github.com/commandlineparser/commandline)
 
 - Remove DotNetEnv package once done.
+
+- Add ability to repeat the function when finishing one.
